@@ -42,8 +42,7 @@ class Evaluator :
             scores[name] = func(y_pred, y_true)
         return scores
 
-    @staticmethod
-    def _print_scores(scores):
+    def _print_scores(self, scores):
         title = f' Scores for model {self.model.name} '
         if self.data_name is not None:
             title += f'on dataset {self.data_name} '
