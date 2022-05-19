@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from models.base_model import BaseModel
-from sklearn.metrics import roc_auc_score, f1_score
+from sklearn.metrics import roc_auc_score, f1_score, average_precision_score
 import numpy as np
 
 
@@ -37,12 +37,12 @@ class Evaluator :
 
     @staticmethod
     def _auc(y_pred, y_true):
-        # auc = roc_auc_score(np.array(y_true), np.array(y_pred))
-        return None
+        auc = roc_auc_score(np.array(y_true), np.array(y_pred), average='micro')
+        return auc
 
     @staticmethod
     def _aupr(y_pred, y_true):
-        return None # todo
+        return average_precision_score(np.array(y_true), np.array(y_pred), average='micro')
 
     @staticmethod
     def _f1_score(y_pred, y_true):
@@ -50,7 +50,7 @@ class Evaluator :
 
     def _get_scores(self, y_pred, y_true):
         scores = {}
-        functions = [self._auc, self._auc, self._f1_score]
+        functions = [self._auc, self._aupr, self._f1_score]
         names = ['AUC', 'AUPR', 'F1']
         for name, func in zip(names, functions) :
             scores[name] = func(y_pred, y_true)
