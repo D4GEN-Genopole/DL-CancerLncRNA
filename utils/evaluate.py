@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 from models.base_model import BaseModel
+from sklearn.metrics import roc_auc_score
+import numpy as np
 
 
 class Evaluator :
@@ -29,13 +31,14 @@ class Evaluator :
         if self.path is None:
             self.model.fit(self.X_train, self.y_train)
         preds = self.model.predict(self.X_test)
-        scores = self.get_scores(preds, self.y_test)
+        scores = self._get_scores(preds, self.y_test)
         self._print_scores(scores)
         return scores
 
     @staticmethod
     def _auc(y_pred, y_true):
-        return None # todo
+        auc = roc_auc_score(np.array(y_true), np.array(y_pred))
+        return auc
 
     @staticmethod
     def _aupr(y_pred, y_true):
@@ -43,7 +46,7 @@ class Evaluator :
 
     def _get_scores(self, y_pred, y_true):
         scores = {}
-        functions = [self._auc, self._aupr]
+        functions = [self._auc, self._auc]
         names = ['AUC', 'AUPR']
         for name, func in zip(names, functions) :
             scores[name] = func(y_pred, y_true)
@@ -56,7 +59,7 @@ class Evaluator :
         bar_len = max(5, int(80 - len(title) / 2))
         print('=' * bar_len + title + '=' * bar_len)
         for score_name in scores.keys():
-            print(f'{}:\t{scores[score_name]}')
+            print(f"{score_name}:\t{scores[score_name]}")
         print('=' * (len(title) + 2 * bar_len))
 
 
@@ -78,7 +81,7 @@ class SequencesEvaluator(EvaluatorFromPaths):
                          os.path.join('data', 'sequences_test.csv'),
                          n_targets=35,
                          index='gencode_id',
-                         data_name='sequences'
+                         data_name='sequences',
                          **kwargs)
 
 
@@ -89,7 +92,7 @@ class ExpressionsEvaluator(EvaluatorFromPaths):
                          os.path.join('data', 'expressions_test.csv'),
                          n_targets=35,
                          index='gencode_id',
-                         data_name='expressions'
+                         data_name='expressions',
                          **kwargs)
 
 
@@ -100,5 +103,5 @@ class SequencesExpressionsEvaluator(EvaluatorFromPaths):
                          os.path.join('data', 'sequences_expressions_test.csv'),
                          n_targets=35,
                          index='gencode_id',
-                         data_name='sequences and expressions'
+                         data_name='sequences and expressions',
                          **kwargs)
