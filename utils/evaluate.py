@@ -1,5 +1,6 @@
-from models.base_model import BaseModel
+import os
 import pandas as pd
+from models.base_model import BaseModel
 
 
 class Evaluator :
@@ -73,8 +74,8 @@ class EvaluatorFromPaths(Evaluator):
 class SequencesEvaluator(EvaluatorFromPaths):
     def __init__(self, model, **kwargs):
         super().__init__(model,
-                         '.\data\sequences_train.csv',
-                         '.\data\sequences_test.csv',
+                         os.path.join('data', 'sequences_train.csv'),
+                         os.path.join('data', 'sequences_test.csv'),
                          n_targets=35,
                          index='gencode_id',
                          data_name='sequences'
@@ -84,8 +85,8 @@ class SequencesEvaluator(EvaluatorFromPaths):
 class ExpressionsEvaluator(EvaluatorFromPaths):
     def __init__(self, model, **kwargs):
         super().__init__(model,
-                         '.\data\expressions_train.csv',
-                         '.\data\expressions_test.csv',
+                         os.path.join('data', 'expressions_train.csv'),
+                         os.path.join('data', 'expressions_test.csv'),
                          n_targets=35,
                          index='gencode_id',
                          data_name='expressions'
@@ -95,8 +96,8 @@ class ExpressionsEvaluator(EvaluatorFromPaths):
 class SequencesExpressionsEvaluator(EvaluatorFromPaths):
     def __init__(self, model, **kwargs):
         super().__init__(model,
-                         '.\data\sequences_expressions_train.csv',
-                         '.\data\sequences_expressions_test.csv',
+                         os.path.join('data', 'sequences_expressions_train.csv'),
+                         os.path.join('data', 'sequences_expressions_test.csv'),
                          n_targets=35,
                          index='gencode_id',
                          data_name='sequences and expressions'
