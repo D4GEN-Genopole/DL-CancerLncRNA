@@ -30,13 +30,14 @@ class Evaluator :
         if self.path is None:
             self.model.fit(self.X_train, self.y_train)
         preds = self.model.predict(self.X_test)
-        scores = self._get_scores(preds, self.y_test)
-        self._print_scores(scores)
+        for target in ['cancer', 'functions', None]:
+            scores = self._get_scores(preds, self.y_test, target=target)
+            self._print_scores(scores, target=target)
         return scores
 
     @staticmethod
     def _auc(y_pred, y_true):
-        auc = roc_auc_score(np.array(y_true), np.array(y_pred), average='micro')
+        auc = roc_auc_score(y_true, y_pred, average='micro')
         return auc
 
     @staticmethod
@@ -47,16 +48,21 @@ class Evaluator :
     def _f1_score(y_pred, y_true):
         return f1_score(y_true, y_pred, average='macro')
 
-    def _get_scores(self, y_pred, y_true):
+    def _get_scores(self, y_pred, y_true, target=None):
+        if target == 'cancer':
+            y_pred, y_true = y_pred.iloc[:, :-5], y_true.iloc[:, :-5]
+        elif target == 'functions':
+            y_pred, y_true = y_pred.iloc[:, -5:], y_true.iloc[:, -5:]
         scores = {}
         functions = [self._auc, self._aupr, self._f1_score]
         names = ['AUC', 'AUPR', 'F1']
-        for name, func in zip(names, functions) :
+        for name, func in zip(names, functions):
             scores[name] = func(y_pred, y_true)
         return scores
 
-    def _print_scores(self, scores):
-        title = f' Scores for model {self.model.name} '
+    def _print_scores(self, scores, target):
+        name = target if target is not None else "ALL"
+        title = f' Scores for model {self.model.name} | TYPE = {name} '
         if self.data_name is not None:
             title += f'on dataset {self.data_name} '
         bar_len = max(5, int(80 - len(title) / 2))
