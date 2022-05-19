@@ -10,6 +10,7 @@ class Evaluator :
             y_train: pd.DataFrame,
             X_test : pd.DataFrame,
             y_test : pd.DataFrame,
+            path=None,
             data_name=None,
     ):
         self.model = model
@@ -17,10 +18,15 @@ class Evaluator :
         self.y_train = y_train
         self.X_test = X_test
         self.y_test = y_test
+        self.path = path
         self.data_name = data_name
+        if path is not None:
+            self.model.load(path)
+
 
     def evaluate(self):
-        self.model.fit(self.X_train, self.y_train)
+        if self.path is None:
+            self.model.fit(self.X_train, self.y_train)
         preds = self.model.predict(self.X_test)
         scores = self.get_scores(preds, self.y_test)
         self._print_scores(scores)
@@ -51,3 +57,44 @@ class Evaluator :
         for score_name in scores.keys():
             print(f'{}:\t{scores[score_name]}')
         print('=' * (len(title) + 2 * bar_len))
+
+
+class EvaluatorFromPaths(Evaluator):
+    def __init__(self, model, train_path, test_path, n_targets, index=None, **kwargs):
+        df_train, df_test = pd.read_csv(train_path), pd.read_csv(test_path)
+        if index is not None:
+            df_train.set_index(index, inplace=True)
+            df_test.set_index(index, inplace=True)
+        X_train, y_train = df_train.iloc[:, :-n_targets], df_train.iloc[:, -n_targets:]
+        X_test, y_test = df_test.iloc[:, :-n_targets], df_test.iloc[:, -n_targets:]
+        super().__init__(model, X_train, y_train, X_test, y_test, **kwargs)
+
+
+class SequencesEvaluator(EvaluatorFromPaths):
+    def __init__(self, model, **kwargs):
+        super().__init__(model,
+                         '.\data\sequences_train.csv',
+                         '.\data\sequences_test.csv',
+                         n_targets=35,
+                         index='gencode_id',
+                         **kwargs)
+
+
+class ExpressionsEvaluator(EvaluatorFromPaths):
+    def __init__(self, model, **kwargs):
+        super().__init__(model,
+                         '.\data\expressions_train.csv',
+                         '.\data\expressions_test.csv',
+                         n_targets=35,
+                         index='gencode_id',
+                         **kwargs)
+
+
+class SequencesExpressionsEvaluator(EvaluatorFromPaths):
+    def __init__(self, model, **kwargs):
+        super().__init__(model,
+                         '.\data\sequences_expressions_train.csv',
+                         '.\data\sequences_expressions_test.csv',
+                         n_targets=35,
+                         index='gencode_id',
+                         **kwargs)
