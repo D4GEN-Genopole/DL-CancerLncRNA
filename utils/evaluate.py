@@ -1,8 +1,8 @@
 import os
+import numpy as np
 import pandas as pd
 from models.base_model import BaseModel
 from sklearn.metrics import roc_auc_score
-import numpy as np
 
 
 class Evaluator :
@@ -42,11 +42,11 @@ class Evaluator :
 
     @staticmethod
     def _aupr(y_pred, y_true):
-        return None # todo
+        return 0. # todo
 
     def _get_scores(self, y_pred, y_true):
         scores = {}
-        functions = [self._auc, self._auc]
+        functions = [self._auc, self._aupr]
         names = ['AUC', 'AUPR']
         for name, func in zip(names, functions) :
             scores[name] = func(y_pred, y_true)
@@ -59,7 +59,7 @@ class Evaluator :
         bar_len = max(5, int(80 - len(title) / 2))
         print('=' * bar_len + title + '=' * bar_len)
         for score_name in scores.keys():
-            print(f"{score_name}:\t{scores[score_name]}")
+            print(f'{score_name}:\t{scores[score_name]}')
         print('=' * (len(title) + 2 * bar_len))
 
 
