@@ -10,16 +10,16 @@ class Evaluator :
             y_train: pd.DataFrame,
             X_test : pd.DataFrame,
             y_test : pd.DataFrame,
-            path=None,
             data_name=None,
+            path=None,
     ):
         self.model = model
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
         self.y_test = y_test
-        self.path = path
         self.data_name = data_name
+        self.path = path
         if path is not None:
             self.model.load(path)
 
@@ -77,6 +77,7 @@ class SequencesEvaluator(EvaluatorFromPaths):
                          '.\data\sequences_test.csv',
                          n_targets=35,
                          index='gencode_id',
+                         data_name='sequences'
                          **kwargs)
 
 
@@ -87,6 +88,7 @@ class ExpressionsEvaluator(EvaluatorFromPaths):
                          '.\data\expressions_test.csv',
                          n_targets=35,
                          index='gencode_id',
+                         data_name='expressions'
                          **kwargs)
 
 
@@ -97,4 +99,5 @@ class SequencesExpressionsEvaluator(EvaluatorFromPaths):
                          '.\data\sequences_expressions_test.csv',
                          n_targets=35,
                          index='gencode_id',
+                         data_name='sequences and expressions'
                          **kwargs)
