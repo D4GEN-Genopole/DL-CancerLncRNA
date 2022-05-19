@@ -8,7 +8,7 @@ import numpy as np
 class Evaluator :
     def __init__(
             self,
-            model : BaseModel,
+            model: BaseModel,
             X_train : pd.DataFrame,
             y_train: pd.DataFrame,
             X_test : pd.DataFrame,
