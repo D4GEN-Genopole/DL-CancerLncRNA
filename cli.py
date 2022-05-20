@@ -1,8 +1,6 @@
 import click
 from utils.evaluate import SequencesEvaluator, ExpressionsEvaluator, SequencesExpressionsEvaluator
-from models.expressions.baselines import *
-from models.sequences.baselines import *
-
+from models.sequences.gru import GRU
 
 @click.group()
 def cli():
