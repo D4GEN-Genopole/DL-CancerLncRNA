@@ -10,7 +10,7 @@ class Evaluator :
             self,
             model : BaseModel,
             X_train : pd.DataFrame,
-            y_train: pd.DataFrame,
+            y_train : pd.DataFrame,
             X_test : pd.DataFrame,
             y_test : pd.DataFrame,
             data_name=None,
@@ -30,9 +30,12 @@ class Evaluator :
         if self.path is None:
             self.model.fit(self.X_train, self.y_train)
         preds = self.model.predict(self.X_test)
-        for target in ['cancer', 'functions', None]:
+        target_sets = ['cancer', 'functions', 'all targets']
+        target_scores = []
+        for target in target_sets:
             scores = self._get_scores(preds, self.y_test, target=target)
-            self._print_scores(scores, target=target)
+            target_scores.append(scores)
+        self._print_scores(target_scores, target_sets)
         return scores
 
     @staticmethod
@@ -48,7 +51,7 @@ class Evaluator :
     def _f1_score(y_pred, y_true):
         return f1_score(y_true, y_pred, average='macro')
 
-    def _get_scores(self, y_pred, y_true, target=None):
+    def _get_scores(self, y_pred, y_true, target='all targets'):
         if target == 'cancer':
             y_pred, y_true = y_pred.iloc[:, :-5], y_true.iloc[:, :-5]
         elif target == 'functions':
@@ -60,15 +63,18 @@ class Evaluator :
             scores[name] = func(y_pred, y_true)
         return scores
 
-    def _print_scores(self, scores, target):
-        name = target if target is not None else "ALL"
-        title = f' Scores for model {self.model.name} | TYPE = {name} '
+    def _print_scores(self, target_scores, target_sets):
+        title = f' Scores for model {self.model.name} '
         if self.data_name is not None:
-            title += f'on dataset {self.data_name} '
-        bar_len = max(5, int(80 - len(title) / 2))
+            title += f'on {self.data_name} dataset '
+        bar_len = max(5, int(40 - len(title) / 2))
         print('=' * bar_len + title + '=' * bar_len)
-        for score_name in scores.keys():
-            print(f'{score_name}:\t{scores[score_name]}')
+        for i, (scores, target) in enumerate(zip(target_scores, target_sets)):
+            lineskip = '\n' if i > 0 else ''
+            print(f'{lineskip}When predicting {target}:')
+            for score_name in scores.keys():
+                space_len = max(1, 10 - len(score_name))
+                print(f'{score_name}:{" " * space_len}{scores[score_name]:.2f}')
         print('=' * (len(title) + 2 * bar_len))
 
 
