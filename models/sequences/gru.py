@@ -30,7 +30,6 @@ class GRUModel(BaseModel):
         # self.preprocess = KmersEncoding(4)
         self.preprocess.fit(X_train)
         X_train = self.preprocess.transform(X_train)
-        # print(f"SIZE X_TRAIN : {X_train.shape}")
         X_val = self.preprocess.transform(X_val)
         dataset_train = RNADataset(X_train,y_train)
         dataset_val = RNADataset(X_val, y_val)
@@ -98,10 +97,8 @@ class GRUModule(nn.Module):
         self.checkpoint = os.path.join('weights', 'gru','gru.pth')
 
     def forward(self, x, gpu=True):
-        print(f"FORWARD : {x.shape}")
         gru_output, h_n = self.gru(x.float())
         out = self.out(gru_output)[:, -1, :]
-        print(f"FORWARD OUTPUT : {out.shape}")
         return out
 
     def save_checkpoint(self):
