@@ -1,7 +1,8 @@
 import click
 from utils.evaluate import SequencesEvaluator, ExpressionsEvaluator, SequencesExpressionsEvaluator
-from models.expressions.baselines import *
 from models.sequences.baselines import *
+from models.expressions.baselines import *
+from models.sequences_expressions.baselines import *
 
 
 @click.group()
@@ -19,6 +20,7 @@ def eval(ctx, model_cls):
         model_cls = globals()[model_cls]
     except KeyError:
         raise Warning(f'Unknown model class {model_cls} ! Try importing it in cli.py')
+    assert 'sequences' in model_cls.__module__ or 'expressions' in model_cls.__module__
 
     kwargs = {}
     for i in range(0, len(ctx.args), 2):
