@@ -49,7 +49,7 @@ class GRUModel(BaseModel):
         params_trainer = {
                 "max_epochs": 1,
             }
-        if 'cpu' not in DEVICE :
+        if 'cpu' not in DEVICE.type :
             params_trainer['gpus'] = -1
         trainer = Trainer(**params_trainer)
         with wandb.init(project='d4gen', entity='sayby', config=hp_pl):
