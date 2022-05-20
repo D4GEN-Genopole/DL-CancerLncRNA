@@ -57,8 +57,7 @@ class OneHotEncode(BasePreprocessor):
 class KmersEncoding(BasePreprocessor):
     def __init__(self, k):
         super().__init__()
-        self.mers = [''.join(comb) for comb in itertools.combinations_with_replacement(
-                                                        ['A', 'T', 'C', 'G'], k)]
+        self.mers = [''.join(comb) for comb in itertools.product('ATCG', repeat=k)]
 
     def transform(self, X) :
         df_count = pd.DataFrame({mer: X.sequence.apply(lambda x: x.count(mer))
