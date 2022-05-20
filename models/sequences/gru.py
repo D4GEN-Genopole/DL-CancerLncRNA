@@ -71,7 +71,7 @@ class GRUModel(BaseModel):
             outputs = []
             for batch in dataset:
                 x,_ = batch
-                x = x.to(DEVICE).reshape(-1,500, 4)
+                x = x.to(DEVICE).reshape(-1,1000, 4)
                 output = self.py_model.model.to(DEVICE)(x)
                 outputs.append(list(output.detach().cpu().numpy()[0]))
             return pd.DataFrame(outputs)
