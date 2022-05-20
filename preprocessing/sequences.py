@@ -1,3 +1,5 @@
+import numpy as np
+
 from preprocessing.base_preprocessor import BasePreprocessor
 import pandas as pd
 
@@ -13,17 +15,28 @@ class OneHotEncode(BasePreprocessor):
         super(OneHotEncode, self).__init__()
 
     @staticmethod
+    def add_pad(x, N):
+        """Make sequence of N size. Add 0 if necessary."""
+        if len(x) > N:
+            return x[:N]
+        else :
+            pad = N-len(x)
+            return x + [[0,0,0,0] for i in range(pad)]
+
+    @staticmethod
     def convert_to_char(X):
         """Convert each sequence to list of characters."""
         return [x for x in X[0]]
 
     @staticmethod
-    def convert_to_one_hot(X_process):
+    def convert_to_one_hot(X_process, N=300):
         """Convert to one hot encoding for the sequences."""
         new_train = []
         for i, row in X_process.iterrows():
+            n_train = [NUCLEOTIDE_DICT[x] for x in row[0]]
+            n_train = OneHotEncode.add_pad(n_train, N)
             new_train.append(
-                [NUCLEOTIDE_DICT[x] for x in row[0]]
+                n_train
             )
         return new_train
 

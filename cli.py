@@ -3,7 +3,7 @@ from utils.evaluate import SequencesEvaluator, ExpressionsEvaluator, SequencesEx
 from models.sequences.baselines import *
 from models.expressions.baselines import *
 from models.sequences_expressions.baselines import *
-from models.sequences.gru import GRU
+from models.sequences.gru import GRUModel
 
 @click.group()
 def cli():

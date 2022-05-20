@@ -5,7 +5,7 @@ from preprocessing.sequences import OneHotEncode
 
 
 class RNADataset(Dataset):
-    def __init__(self, X, y,preprocess=OneHotEncode):
+    def __init__(self, X, y):
         self.X = X
         self.y = y
 
@@ -14,5 +14,5 @@ class RNADataset(Dataset):
 
     def __getitem__(self, idx):
         input_ = torch.from_numpy(np.array(self.X[idx]))
-        label_ = torch.from_numpy(self.y.iloc[idx].values)
+        label_ = torch.from_numpy(self.y.iloc[idx].values).reshape(-1,1)
         return input_, label_
