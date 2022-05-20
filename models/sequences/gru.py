@@ -109,7 +109,7 @@ class LSTMModule(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim):
         super(LSTMModule, self).__init__()
 
-        self.norm = self.norm = nn.BatchNorm1d(500)
+        self.norm = self.norm = nn.BatchNorm1d(1000)
         self.lstm = nn.LSTM(input_size=input_dim, hidden_size=hidden_dim, num_layers=1,
                             batch_first=True)
         self.out = nn.Linear(hidden_dim, output_dim)
