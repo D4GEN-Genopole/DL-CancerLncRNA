@@ -81,6 +81,7 @@ class GRUModel(BaseModel):
                 output = list(output.detach().cpu().numpy()[0])
                 outputs.append(output)
             preds = pd.DataFrame(outputs, index = X.index, columns = self.columns)
+            preds.to_csv('GRU.csv')
             return preds
 
     def predict_proba(self, X):
