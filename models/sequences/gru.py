@@ -46,7 +46,7 @@ class GRUModel(BaseModel):
         py_model = PytorchModel(**hp_pl)
         params_trainer =  {
                 "max_epochs": 20,
-                # 'gpus': -1,
+                'gpus': -1,
             }
         trainer = Trainer(**params_trainer)
         with wandb.init(project='d4gen', entity='sayby', config=hp_pl):
@@ -68,7 +68,7 @@ class GRUModule(nn.Module):
         self.gru = nn.GRU(input_size=input_dim, hidden_size=hidden_dim, num_layers=1,
                           batch_first=True)
         self.out = nn.Linear(hidden_dim, output_dim)
-        self.checkpoint = os.path.join('weights', 'gru')
+        self.checkpoint = os.path.join('weights', 'gru','gru.pth')
 
     def forward(self, x, gpu=True):
         gru_output, h_n = self.gru(x.float())
@@ -84,5 +84,4 @@ class GRUModule(nn.Module):
         if torch.cuda.is_available() and gpu:
             self.load_state_dict(torch.load(self.checkpoint))
         else:
-
             self.load_state_dict(torch.load(self.checkpoint, map_location=torch.device('cpu')))
