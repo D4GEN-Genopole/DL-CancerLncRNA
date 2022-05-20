@@ -67,11 +67,11 @@ class Evaluator :
             y_pred, y_true = y_pred.iloc[:, -5:], y_true.iloc[:, -5:]
         scores = {}
         functions = [
-                     # self._auc, self._f1_score,
+                     self._auc, self._f1_score,
                      self._lrap, self._neg_coverage_error, self._neg_ranking_loss
                      ]
         names = [
-                 # 'AUC', 'F1',
+                 'AUC', 'F1',
                  'LRAP', 'Negative coverage error', 'Negative ranking loss'
                  ]
         for name, func in zip(names, functions):

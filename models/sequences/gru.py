@@ -49,7 +49,7 @@ class GRUModel(BaseModel):
         params_trainer = {
                 "max_epochs": 20,
             }
-        if 'cpu' not in DEVICE.type :
+        if 'cpu' not in DEVICE.type:
             params_trainer['gpus'] = -1
         trainer = Trainer(**params_trainer)
         with wandb.init(project='d4gen', entity='sayby', config=hp_pl):
@@ -57,9 +57,9 @@ class GRUModel(BaseModel):
         self.py_model.model.save_checkpoint()
 
     def predict(self, X):
-        if self.py_model is not None :
+        if self.py_model is not None:
             self.py_model.model.load_checkpoint()
-        else :
+        else:
             print('NOT LOADED WEIGHTS')
             return None
         if self.preprocess is None :
@@ -70,7 +70,7 @@ class GRUModel(BaseModel):
             outputs = []
             for batch in dataset:
                 x,_ = batch
-                x = x.to(DEVICE).reshape(-1,300 , 4)
+                x = x.to(DEVICE).reshape(-1, 300, 4)
                 output = self.py_model.model.to(DEVICE)(x)
                 outputs.append(list(output.detach().cpu().numpy()[0]))
             return pd.DataFrame(outputs)
