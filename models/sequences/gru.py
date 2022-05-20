@@ -39,9 +39,9 @@ class GRUModel(BaseModel):
             "dataset_test": dataset_val,
         }
         self.dataloader = RNADataloader(**params_dataloader)
-        gru_module = GRUModule(4, 256, 35)
+        gru_module = GRUModule(4, 128, 35)
         hp_pl = {
-            'lr' : 1e-3,
+            'lr' : 1e-4,
             'model' : gru_module,
 
         }
@@ -83,7 +83,7 @@ class GRUModule(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim):
         super(GRUModule, self).__init__()
 
-        self.gru = nn.GRU(input_size=input_dim, hidden_size=hidden_dim, num_layers=1,
+        self.gru = nn.GRU(input_size=input_dim, hidden_size=hidden_dim, num_layers=2,
                           batch_first=True)
         self.out = nn.Linear(hidden_dim, output_dim)
         self.checkpoint = os.path.join('weights', 'gru','gru.pth')
