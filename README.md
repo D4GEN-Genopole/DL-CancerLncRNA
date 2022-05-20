@@ -10,8 +10,11 @@ Long non-coding RNAs (LncRNAs) are transcripts >200 nt that do not code for prot
 Experimental characterisation of lncRNAs it’s a long process. Bioinformatics approaches are urgently needed to identify the lncRNAs of interest for clinical applications.
 Tons of data for their study are already available, and many of them are public!
 In this project we collected some of the publicly available data such as:
+
 LncRNAs sequences → https://www.gencodegenes.org/ https://www.ensembl.org/index.html 
+
 LncRNA expression data across ~1500 samples of cancer → https://dcc.icgc.org/pcawg 
+
 LncRNAs and cancer associations →  http://www.bio-bigdata.com/lnc2cancer/  https://www.gold-lab.org/clc
 
 Applications
