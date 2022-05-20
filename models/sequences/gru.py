@@ -39,10 +39,11 @@ class GRUModel(BaseModel):
             "dataset_test": dataset_val,
         }
         self.dataloader = RNADataloader(**params_dataloader)
-        gru_module = GRUModule(4, 128, 35)
+        # model = GRUModule(4, 128, 35)
+        model = LSTMModule(4, 256, 35)
         hp_pl = {
             'lr' : 1e-4,
-            'model' : gru_module,
+            'model' : model,
 
         }
         self.py_model = PytorchModel(**hp_pl)
@@ -103,3 +104,31 @@ class GRUModule(nn.Module):
             self.load_state_dict(torch.load(self.checkpoint))
         else:
             self.load_state_dict(torch.load(self.checkpoint, map_location=torch.device('cpu')))
+
+class LSTMModule(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim):
+        super(LSTMModule, self).__init__()
+
+        self.norm = self.norm = nn.BatchNorm1d(500)
+        self.lstm = nn.LSTM(input_size=input_dim, hidden_size=hidden_dim, num_layers=1,
+                            batch_first=True)
+        self.out = nn.Linear(hidden_dim, output_dim)
+        self.checkpoint = os.path.join('weights', 'model', 'lstm')
+
+    def forward(self, x, gpu=True):
+        x = self.norm(x)
+        lstm_output, _ = self.lstm(x)
+        out = self.out(lstm_output)[:, -1, :]
+        return out
+
+    def save_checkpoint(self):
+        print('--- Save model checkpoint ---')
+        torch.save(self.state_dict(), self.checkpoint)
+
+    def load_checkpoint(self, gpu=True):
+        print('--- Loading model checkpoint ---')
+        if torch.cuda.is_available() and gpu:
+            self.load_state_dict(torch.load(self.checkpoint))
+        else:
+            self.load_state_dict(torch.load(self.checkpoint, map_location=torch.device('cpu')))
+
