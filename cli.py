@@ -24,7 +24,10 @@ def eval(ctx, model_cls):
     for i in range(0, len(ctx.args), 2):
         key, value = ctx.args[i], ctx.args[i + 1]
         key = key.lstrip('-')
-        value = float(value)
+        try:
+            value = float(value)
+        except ValueError:
+            pass
         kwargs[key] = value
 
     model = model_cls(**kwargs)
