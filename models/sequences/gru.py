@@ -19,17 +19,16 @@ class GRUModel(BaseModel):
         super(GRUModel, self).__init__()
         self.py_model = None
         self.preprocess = None
-        self.chanel = 120
+        self.chanel = 256
 
     def fit(self, X, y):
         N = int(0.8*len(X))
         X_train, X_val = X.iloc[:N], X.iloc[N:]
         y_train, y_val = y.iloc[:N], y.iloc[N:]
         # self.preprocess = OneHotEncode()
-        self.preprocess = KmersEncoding(7)
+        self.preprocess = KmersEncoding(4)
         self.preprocess.fit(X_train)
         X_train = self.preprocess.transform(X_train)
-        # print(X_train.shape)
         X_val = self.preprocess.transform(X_val)
         dataset_train = RNADataset(X_train,y_train)
         dataset_val = RNADataset(X_val, y_val)
