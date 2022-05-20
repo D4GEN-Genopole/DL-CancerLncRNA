@@ -20,5 +20,5 @@ class RNADataset(Dataset):
         if self.y is not None :
             label_ = torch.from_numpy(self.y.iloc[idx].values).reshape(-1,1)
         else:
-            label_ = None
+            label_ = torch.from_numpy(np.array([]))
         return input_, label_
