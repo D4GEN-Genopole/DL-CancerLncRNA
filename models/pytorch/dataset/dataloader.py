@@ -28,31 +28,6 @@ class RNADataloader(LightningDataModule):
             batch_size=self.batch_size,
             shuffle=self.shuffle)
 
-    def collate_fn(self, batch):
-        """Collate fn for the dataset.
-
-        Args :
-            -batch : the batch with 4 tensors (input_ids, attention_mask, labels)
-        """
-        input_ids, attention_mask, target_ids = [], [], []
-        for subbatch in batch:
-            input_ids.append(subbatch[0])
-            attention_mask.append(subbatch[1])
-            target_ids.append(subbatch[2])
-
-        input_ids = torch.vstack(input_ids)
-        attention_mask = torch.vstack(attention_mask)
-        target_ids = torch.vstack(target_ids)
-
-        return input_ids, attention_mask, target_ids
-
-
-    def collate_fn(self, batch):
-        """Collate for the dataset."""
-        x, y = [], []
-        for subbatch in batch :
-            x.append()
-
 
     def train_dataloader(self):
         return self.dataset_train

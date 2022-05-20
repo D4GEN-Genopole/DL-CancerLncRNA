@@ -29,7 +29,7 @@ class OneHotEncode(BasePreprocessor):
         return [x for x in X[0]]
 
     @staticmethod
-    def convert_to_one_hot(X_process, N=300):
+    def convert_to_one_hot(X_process, N=1000):
         """Convert to one hot encoding for the sequences."""
         new_train = []
         for i, row in X_process.iterrows():
