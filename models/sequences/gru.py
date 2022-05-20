@@ -7,7 +7,7 @@ from pytorch_lightning import Trainer
 from models.pytorch.dataset.dataloader import RNADataloader
 from models.pytorch.dataset.dataset import RNADataset
 from models.pytorch.model.pytorch_model import PytorchModel
-from preprocessing.sequences import OneHotEncode
+from preprocessing.sequences import OneHotEncode, KmersEncoding
 import os
 import wandb
 
@@ -19,14 +19,17 @@ class GRUModel(BaseModel):
         super(GRUModel, self).__init__()
         self.py_model = None
         self.preprocess = None
+        self.chanel = 120
 
     def fit(self, X, y):
         N = int(0.8*len(X))
         X_train, X_val = X.iloc[:N], X.iloc[N:]
         y_train, y_val = y.iloc[:N], y.iloc[N:]
-        self.preprocess = OneHotEncode()
+        # self.preprocess = OneHotEncode()
+        self.preprocess = KmersEncoding(7)
         self.preprocess.fit(X_train)
         X_train = self.preprocess.transform(X_train)
+        # print(X_train.shape)
         X_val = self.preprocess.transform(X_val)
         dataset_train = RNADataset(X_train,y_train)
         dataset_val = RNADataset(X_val, y_val)
@@ -39,16 +42,15 @@ class GRUModel(BaseModel):
             "dataset_test": dataset_val,
         }
         self.dataloader = RNADataloader(**params_dataloader)
-        # model = GRUModule(4, 128, 35)
-        model = LSTMModule(4, 256, 35)
+        # model = GRUModule(self.chanel, 128, 35)
+        model = LSTMModule(self.chanel, 256, 35)
         hp_pl = {
             'lr' : 1e-4,
             'model' : model,
-
         }
         self.py_model = PytorchModel(**hp_pl)
         params_trainer = {
-                "max_epochs": 100,
+                "max_epochs": 20,
             }
         if 'cpu' not in DEVICE.type:
             params_trainer['gpus'] = -1
@@ -71,7 +73,7 @@ class GRUModel(BaseModel):
             outputs = []
             for batch in dataset:
                 x,_ = batch
-                x = x.to(DEVICE).reshape(-1,1000, 4)
+                x = x.to(DEVICE).reshape(-1,self.chanel, 4)
                 output = self.py_model.model.to(DEVICE)(x)
                 outputs.append(list(output.detach().cpu().numpy()[0]))
             return pd.DataFrame(outputs)
@@ -108,8 +110,8 @@ class GRUModule(nn.Module):
 class LSTMModule(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim):
         super(LSTMModule, self).__init__()
-
-        self.norm = self.norm = nn.BatchNorm1d(1000)
+        self.input_dim = input_dim
+        self.norm = self.norm = nn.BatchNorm1d(input_dim)
         self.lstm = nn.LSTM(input_size=input_dim, hidden_size=hidden_dim, num_layers=1,
                             batch_first=True)
         self.out = nn.Linear(hidden_dim, output_dim)
@@ -117,7 +119,7 @@ class LSTMModule(nn.Module):
 
     def forward(self, x, gpu=True):
         x = self.norm(x.float())
-        lstm_output, _ = self.lstm(x)
+        lstm_output, _ = self.lstm(x.view(-1, 1, self.input_dim))
         out = self.out(lstm_output)[:, -1, :]
         return out
 
