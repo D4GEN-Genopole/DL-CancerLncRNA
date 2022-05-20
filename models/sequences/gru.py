@@ -39,7 +39,7 @@ class GRUModel(BaseModel):
             "dataset_test": dataset_val,
         }
         self.dataloader = RNADataloader(**params_dataloader)
-        gru_module = GRUModule(4, 128, 35)
+        gru_module = GRUModule(4, 256, 35)
         hp_pl = {
             'lr' : 1e-3,
             'model' : gru_module,
@@ -70,7 +70,7 @@ class GRUModel(BaseModel):
             outputs = []
             for batch in dataset:
                 x,_ = batch
-                x = x.to(DEVICE).reshape(-1, 300, 4)
+                x = x.to(DEVICE).reshape(-1,500, 4)
                 output = self.py_model.model.to(DEVICE)(x)
                 outputs.append(list(output.detach().cpu().numpy()[0]))
             return pd.DataFrame(outputs)
