@@ -116,7 +116,7 @@ class LSTMModule(nn.Module):
         self.checkpoint = os.path.join('weights', 'model', 'lstm')
 
     def forward(self, x, gpu=True):
-        x = self.norm(x)
+        x = self.norm(x.float())
         lstm_output, _ = self.lstm(x)
         out = self.out(lstm_output)[:, -1, :]
         return out
