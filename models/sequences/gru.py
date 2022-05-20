@@ -74,10 +74,8 @@ class GRUModel(BaseModel):
                 outputs.append(output.detach().cpu().numpy())
 
 
-
-
     def predict_proba(self, X):
-        pass
+        return self.predict(X)
 
 
 class GRUModule(nn.Module):
