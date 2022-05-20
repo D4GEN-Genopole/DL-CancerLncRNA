@@ -46,10 +46,11 @@ class GRUModel(BaseModel):
 
         }
         self.py_model = PytorchModel(**hp_pl)
-        params_trainer =  {
-                "max_epochs": 5,
-                'gpus': -1,
+        params_trainer = {
+                "max_epochs": 1,
             }
+        if 'cpu' not in DEVICE :
+            params_trainer['gpus'] = -1
         trainer = Trainer(**params_trainer)
         with wandb.init(project='d4gen', entity='sayby', config=hp_pl):
             trainer.fit(self.py_model, self.dataloader)
@@ -69,10 +70,10 @@ class GRUModel(BaseModel):
             outputs = []
             for batch in dataset:
                 x,_ = batch
-                x = x.to(DEVICE)
+                x = x.to(DEVICE).reshape(-1,300 , 4)
                 output = self.py_model.model.to(DEVICE)(x)
-                outputs.append(output.detach().cpu().numpy())
-
+                outputs.append(list(output.detach().cpu().numpy()[0]))
+            return pd.DataFrame(outputs)
 
     def predict_proba(self, X):
         return self.predict(X)
