@@ -17,45 +17,64 @@ class GRUModel(BaseModel):
     """Model that uses GRU"""
     def __init__(self):
         super(GRUModel, self).__init__()
+        self.py_model = None
+        self.preprocess = None
 
     def fit(self, X, y):
         N = int(0.8*len(X))
         X_train, X_val = X.iloc[:N], X.iloc[N:]
         y_train, y_val = y.iloc[:N], y.iloc[N:]
-        preprocess = OneHotEncode()
-        preprocess.fit(X_train)
-        X_train = preprocess.transform(X_train)
-        X_val = preprocess.transform(X_val)
+        self.preprocess = OneHotEncode()
+        self.preprocess.fit(X_train)
+        X_train = self.preprocess.transform(X_train)
+        X_val = self.preprocess.transform(X_val)
         dataset_train = RNADataset(X_train,y_train)
         dataset_val = RNADataset(X_val, y_val)
         params_dataloader = {
             "device": DEVICE,
-            "batch_size": 1,
+            "batch_size": 4,
             "shuffle": True,
             "dataset_train": dataset_train,
             "dataset_val": dataset_val,
             "dataset_test": dataset_val,
         }
-        dataloader = RNADataloader(**params_dataloader)
-        gru_module = GRUModule(4, 300, 35)
+        self.dataloader = RNADataloader(**params_dataloader)
+        gru_module = GRUModule(4, 128, 35)
         hp_pl = {
             'lr' : 1e-3,
             'model' : gru_module,
 
         }
-        py_model = PytorchModel(**hp_pl)
+        self.py_model = PytorchModel(**hp_pl)
         params_trainer =  {
-                "max_epochs": 20,
+                "max_epochs": 5,
                 'gpus': -1,
             }
         trainer = Trainer(**params_trainer)
         with wandb.init(project='d4gen', entity='sayby', config=hp_pl):
-            trainer.fit(py_model, dataloader)
-
-
+            trainer.fit(self.py_model, self.dataloader)
+        self.py_model.model.save_checkpoint()
 
     def predict(self, X):
-        pass
+        if self.py_model is not None :
+            self.py_model.model.load_checkpoint()
+        else :
+            print('NOT LOADED WEIGHTS')
+            return None
+        if self.preprocess is None :
+            print("NOT INITIALISE PREPROCESS")
+        else:
+            X_test = self.preprocess.transform(X)
+            dataset = RNADataset(X_test, None)
+            outputs = []
+            for batch in dataset:
+                x,_ = batch
+                x = x.to(DEVICE)
+                output = self.py_model.model.to(DEVICE)(x)
+                outputs.append(output.detach().cpu().numpy())
+
+
+
 
     def predict_proba(self, X):
         pass
