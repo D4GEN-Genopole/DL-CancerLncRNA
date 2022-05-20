@@ -1,5 +1,6 @@
-from preprocessing.base_preprocessor import BasePreprocessor
 import pandas as pd
+import itertools
+from preprocessing.base_preprocessor import BasePreprocessor
 
 NUCLEOTIDE_DICT = {
             "A" : [1,0,0,0],
@@ -10,7 +11,7 @@ NUCLEOTIDE_DICT = {
 
 class OneHotEncode(BasePreprocessor):
     def __init__(self):
-        super(OneHotEncode, self).__init__()
+        super().__init__()
 
     @staticmethod
     def convert_to_char(X):
@@ -40,3 +41,17 @@ class OneHotEncode(BasePreprocessor):
         self.fit(X)
         return self.transform(X)
 
+
+class KmersEncoding(BasePreprocessor):
+    def __init__(self, k):
+        super().__init__()
+        self.mers = [''.join(comb) for comb in itertools.combinations_with_replacement(
+                                                        ['A', 'T', 'C', 'G'], k)]
+
+    def transform(self, X) :
+        df_count = pd.DataFrame({mer: X.sequence.apply(lambda x: x.count(mer))
+                                                        for mer in self.mers},
+                                                        index=X.index)
+        df_per_kb = df_count.div(X.sequence.apply(len) / 1000, axis=0)
+        df_normalized = (df_per_kb - df_per_kb.mean()) / df_per_kb.std()
+        return df_normalized
