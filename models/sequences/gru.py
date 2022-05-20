@@ -19,20 +19,22 @@ class GRUModel(BaseModel):
         super(GRUModel, self).__init__()
         self.py_model = None
         self.preprocess = None
-        self.chanel = 256
+        self.chanel = 4
 
     def fit(self, X, y):
         N = int(0.8*len(X))
+        self.columns = y.columns
         X_train, X_val = X.iloc[:N], X.iloc[N:]
         y_train, y_val = y.iloc[:N], y.iloc[N:]
-        # self.preprocess = OneHotEncode()
-        self.preprocess = KmersEncoding(4)
+        self.preprocess = OneHotEncode()
+        # self.preprocess = KmersEncoding(4)
         self.preprocess.fit(X_train)
         X_train = self.preprocess.transform(X_train)
+        # print(f"SIZE X_TRAIN : {X_train.shape}")
         X_val = self.preprocess.transform(X_val)
         dataset_train = RNADataset(X_train,y_train)
         dataset_val = RNADataset(X_val, y_val)
-        params_dataloader = {
+        self.params_dataloader = {
             "device": DEVICE,
             "batch_size": 4,
             "shuffle": True,
@@ -40,16 +42,16 @@ class GRUModel(BaseModel):
             "dataset_val": dataset_val,
             "dataset_test": dataset_val,
         }
-        self.dataloader = RNADataloader(**params_dataloader)
-        # model = GRUModule(self.chanel, 128, 35)
-        model = LSTMModule(self.chanel, 256, 35)
+        self.dataloader = RNADataloader(**self.params_dataloader)
+        model = GRUModule(self.chanel, 128, 35)
+        # model = LSTMModule(self.chanel, 256, 35)
         hp_pl = {
             'lr' : 1e-4,
             'model' : model,
         }
         self.py_model = PytorchModel(**hp_pl)
         params_trainer = {
-                "max_epochs": 20,
+                "max_epochs": 1,
             }
         if 'cpu' not in DEVICE.type:
             params_trainer['gpus'] = -1
@@ -68,14 +70,18 @@ class GRUModel(BaseModel):
             print("NOT INITIALISE PREPROCESS")
         else:
             X_test = self.preprocess.transform(X)
-            dataset = RNADataset(X_test, None)
+            self.params_dataloader['dataset_test'] = RNADataset(X_test, None)
+            self.params_dataloader['batch_size'] = 1
+            self.dataloader = RNADataloader(**self.params_dataloader)
             outputs = []
-            for batch in dataset:
+            for batch in self.dataloader.test_dataloader():
                 x,_ = batch
-                x = x.to(DEVICE).reshape(-1,self.chanel, 4)
+                x = x.to(DEVICE)
                 output = self.py_model.model.to(DEVICE)(x)
-                outputs.append(list(output.detach().cpu().numpy()[0]))
-            return pd.DataFrame(outputs)
+                output = list(output.detach().cpu().numpy()[0])
+                outputs.append(output)
+            preds = pd.DataFrame(outputs, index = X.index, columns = self.columns)
+            return preds
 
     def predict_proba(self, X):
         return self.predict(X)
@@ -91,8 +97,10 @@ class GRUModule(nn.Module):
         self.checkpoint = os.path.join('weights', 'gru','gru.pth')
 
     def forward(self, x, gpu=True):
+        print(f"FORWARD : {x.shape}")
         gru_output, h_n = self.gru(x.float())
         out = self.out(gru_output)[:, -1, :]
+        print(f"FORWARD OUTPUT : {out.shape}")
         return out
 
     def save_checkpoint(self):
@@ -114,11 +122,13 @@ class LSTMModule(nn.Module):
         self.lstm = nn.LSTM(input_size=input_dim, hidden_size=hidden_dim, num_layers=1,
                             batch_first=True)
         self.out = nn.Linear(hidden_dim, output_dim)
-        self.checkpoint = os.path.join('weights', 'model', 'lstm')
+        self.checkpoint = os.path.join('weights', 'model', 'lstm.pth')
 
     def forward(self, x, gpu=True):
+        # print(f"FORWARD : {x.shape}")
         x = self.norm(x.float())
-        lstm_output, _ = self.lstm(x.view(-1, 1, self.input_dim))
+        x = x.view(-1, 4, self.input_dim)
+        lstm_output, _ = self.lstm(x)
         out = self.out(lstm_output)[:, -1, :]
         return out
 

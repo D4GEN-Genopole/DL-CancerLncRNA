@@ -10,6 +10,7 @@ class RNADataset(Dataset):
         self.y = y
 
     def __len__(self):
+        return 2
         return len(self.X)
 
     def __getitem__(self, idx):
@@ -20,5 +21,5 @@ class RNADataset(Dataset):
         if self.y is not None :
             label_ = torch.from_numpy(self.y.iloc[idx].values).reshape(-1,1)
         else:
-            label_ = None
+            label_ = torch.from_numpy(np.array([]))
         return input_, label_
