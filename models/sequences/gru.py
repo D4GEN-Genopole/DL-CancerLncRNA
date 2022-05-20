@@ -48,6 +48,8 @@ class GRUModel(BaseModel):
                 "max_epochs": 20,
                 'gpus': -1,
             }
+        import os
+        os.environ["CUDA_VISIBLE_DEVICES"] = '1'
         trainer = Trainer(**params_trainer)
         with wandb.init(project='d4gen', entity='sayby', config=hp_pl):
             trainer.fit(py_model, dataloader)
