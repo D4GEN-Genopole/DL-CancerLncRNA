@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import itertools
+import itertools, more_itertools
 from preprocessing.base_preprocessor import BasePreprocessor
 
 NUCLEOTIDE_DICT = {
@@ -59,10 +59,39 @@ class KmersEncoding(BasePreprocessor):
         super().__init__()
         self.mers = [''.join(comb) for comb in itertools.product('ATCG', repeat=k)]
 
-    def transform(self, X) :
+    def transform(self, X):
         df_count = pd.DataFrame({mer: X.sequence.apply(lambda x: x.count(mer))
                                                         for mer in self.mers},
                                                         index=X.index)
         df_per_kb = df_count.div(X.sequence.apply(len) / 1000, axis=0)
         df_normalized = (df_per_kb - df_per_kb.mean()) / df_per_kb.std()
         return df_normalized
+
+
+class MersOneHotEncoding(BasePreprocessor):
+    def __init__(self, k, length=500):
+        super().__init__()
+        self.k = k
+        self.length = length - 2
+        mers = [''.join(comb) for comb in itertools.product('ATCG', repeat=self.k)]
+        self.val_dict = {mer: i+1 for i, mer in enumerate(mers)}
+        self.val_dict['start'] = 0
+        self.val_dict['end'] = max(self.val_dict.values()) + 1
+
+    def transform(self, X):
+        X.loc[:, 'sequence'] = X.sequence.apply(lambda x: x[:self.length + self.k - 1])
+        X = X.sequence.apply(lambda x: ['start'] + [''.join(comb)
+                                    for comb in more_itertools.windowed(x, self.k)]
+                                    + ['end'] + [np.nan] * (self.length + self.k - 1 - len(x))
+                                    if len(x) >= self.k
+                                    else ['start', 'end'] + [np.nan] * self.length)
+        X = pd.DataFrame(X.tolist())
+        X = X.applymap(lambda x: self.val_dict[x] if not pd.isna(x) else x)
+        nan_mask = X.notna()
+        X = pd.DataFrame(X.fillna(0), dtype='int')
+        xmat = np.stack((np.arange(X.shape[0]),) * X.shape[1], axis=1)
+        ymat = np.stack((np.arange(X.shape[1]),) * X.shape[0], axis=0)
+        values = np.zeros((X.shape[0], len(self.val_dict.keys()), self.length+2))
+        values[xmat[nan_mask], X.values[nan_mask], ymat[nan_mask]] = 1.
+
+        return values
