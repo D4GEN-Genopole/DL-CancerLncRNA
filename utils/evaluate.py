@@ -2,7 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 from models.base_model import BaseModel
-from sklearn.metrics import roc_auc_score, f1_score, average_precision_score
+from sklearn.metrics import roc_auc_score, f1_score, coverage_error, \
+                            label_ranking_average_precision_score, label_ranking_loss
 
 
 class Evaluator :
@@ -29,7 +30,7 @@ class Evaluator :
     def evaluate(self):
         if self.path is None:
             self.model.fit(self.X_train, self.y_train)
-        preds = self.model.predict(self.X_test)
+        preds = self.model.predict_proba(self.X_test)
         target_sets = ['cancer', 'functions', 'all targets']
         target_scores = []
         for target in target_sets:
@@ -44,12 +45,20 @@ class Evaluator :
         return auc
 
     @staticmethod
-    def _aupr(y_pred, y_true):
-        return 0. # todo
-
-    @staticmethod
     def _f1_score(y_pred, y_true):
         return f1_score(y_true, y_pred, average='macro')
+
+    @staticmethod
+    def _lrap(y_pred, y_true):
+        return label_ranking_average_precision_score(y_true, y_pred)
+
+    @staticmethod
+    def _neg_coverage_error(y_pred, y_true):
+        return 1 - coverage_error(y_true, y_pred) / y_true.shape[1]
+
+    @staticmethod
+    def _neg_ranking_loss(y_pred, y_true):
+        return 1 - label_ranking_loss(y_true, y_pred)
 
     def _get_scores(self, y_pred, y_true, target='all targets'):
         if target == 'cancer':
@@ -57,8 +66,9 @@ class Evaluator :
         elif target == 'functions':
             y_pred, y_true = y_pred.iloc[:, -5:], y_true.iloc[:, -5:]
         scores = {}
-        functions = [self._auc, self._aupr, self._f1_score]
-        names = ['AUC', 'AUPR', 'F1']
+        functions = [self._auc, self._f1_score, self._lrap, self._neg_coverage_error,
+                                                            self._neg_ranking_loss]
+        names = ['AUC', 'F1', 'LRAP', 'Negative coverage error', 'Negative ranking loss']
         for name, func in zip(names, functions):
             scores[name] = func(y_pred, y_true)
         return scores
@@ -73,7 +83,7 @@ class Evaluator :
             lineskip = '\n' if i > 0 else ''
             print(f'{lineskip}When predicting {target}:')
             for score_name in scores.keys():
-                space_len = max(1, 10 - len(score_name))
+                space_len = max(1, 25 - len(score_name))
                 print(f'{score_name}:{" " * space_len}{scores[score_name]:.2f}')
         print('=' * (len(title) + 2 * bar_len))
 
