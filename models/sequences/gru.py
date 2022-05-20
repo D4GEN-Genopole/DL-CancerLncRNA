@@ -30,7 +30,7 @@ class GRUModel(BaseModel):
         dataset_val = RNADataset(X_val, y_val)
         params_dataloader = {
             "device": DEVICE,
-            "batch_size": 4,
+            "batch_size": 1,
             "shuffle": True,
             "dataset_train": dataset_train,
             "dataset_val": dataset_val,
@@ -48,8 +48,6 @@ class GRUModel(BaseModel):
                 "max_epochs": 20,
                 'gpus': -1,
             }
-        import os
-        os.environ["CUDA_VISIBLE_DEVICES"] = '1'
         trainer = Trainer(**params_trainer)
         with wandb.init(project='d4gen', entity='sayby', config=hp_pl):
             trainer.fit(py_model, dataloader)
