@@ -48,7 +48,7 @@ class GRUModel(BaseModel):
         }
         self.py_model = PytorchModel(**hp_pl)
         params_trainer = {
-                "max_epochs": 20,
+                "max_epochs": 100,
             }
         if 'cpu' not in DEVICE.type:
             params_trainer['gpus'] = -1
