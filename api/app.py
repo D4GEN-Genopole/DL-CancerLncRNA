@@ -17,10 +17,9 @@ def get_page_content():
     hackathon_title = st.markdown("<h3 style='text-align: center; color: white;'>D4Gen Hacking Days</h3>",
                 unsafe_allow_html=True)
     prediction_title = st.subheader("Cancer prediction")
-    prediction_description = st.caption("Given a RNA id, we predict the percentage to have a cancer.")
+    prediction_description = st.caption("Given a Gencode id, we predict the percentage to have a cancer.")
     input_id = st.text_input(label='Gencode id')
     run_button = st.button(label='Run analysis')
-
     if run_button:
         return input_id
 
