@@ -60,8 +60,6 @@ Here is a visualisation of the distribution of the labels :
 
 The final dataset with both of the features of the RNA has the following proportion between the different representations : 
 
-| Sequences and Expressions |
-|---| 
 <p align="center">
 
 <a >
@@ -69,6 +67,7 @@ The final dataset with both of the features of the RNA has the following proport
 </a>
 
 </p>
+| Sequences and Expressions |
 
 To get the plots of the visualisations, use the following command : 
 
