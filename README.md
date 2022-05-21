@@ -62,7 +62,7 @@ The final dataset with both of the features of the RNA has the following proport
 
 | Sequences and Expressions |
 |---| 
-| <img src="images/intersection.png" width="200"> | 
+| <img src="images/intersection.png" width="400"> | 
 
 To get the plots of the visualisations, use the following command : 
 
