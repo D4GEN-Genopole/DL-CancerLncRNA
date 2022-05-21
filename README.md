@@ -61,6 +61,11 @@ make eval MODEL=<MODEL_NAME> ARGS="ARG1 VALUE1 ARG2 VALUE2"
 with <MODEL_NAME> the name of the model to use (usually a class in the `models` directory). 
 If one wants to add arguments to the model, use it in the `ARGS` parameter.
 
+One can also use the container (Docker). 
+To do so, use the following command : 
+```shell
+make docker 
+```
 
 ## Data 
 

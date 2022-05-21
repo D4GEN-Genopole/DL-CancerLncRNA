@@ -1,7 +1,7 @@
 
 docker :
 	docker build -t d4gen .
-	docker run -it d4gen /bin/bash
+	docker run -it -p 8051:8051 d4gen /bin/bash
 
 eval :
 	python3 cli.py eval $(MODEL) $(ARGS)
