@@ -1,38 +1,33 @@
-# DL-CancerLncRNA
-
+## DL-CancerLncRNA
 <p align="center">
-
 <a >
     <img src='images/logo.png'  width="400"/>
 </a>
-
 </p>
 
-
-## Objective
 The present project consists in the development of an AI method based on deep-learning to associate long non-coding RNAs (lncRNAs) to cancer types and biological functions. 
 
 Long non-coding RNAs (**LncRNAs**) are transcripts >200 nt that do not code for proteins. There are ~40 000 - 60 000 lncRNAs in the human genome. However, up to now we only have information for less than 1000. Several of them are implicated in important cell processes and diseases such as cancer.
 Experimental characterisation of lncRNAs is a long process. **Bioinformatics approaches are urgently needed** to identify the lncRNAs of interest for **clinical applications**.
 Tons of data for their study are already available, and many of them **are public**!
 In this project we collected some of the publicly available data such as:
-
 - LncRNAs sequences → https://www.gencodegenes.org/ https://www.ensembl.org/index.html 
-
 - LncRNA expression data across ~1500 samples of cancer → https://dcc.icgc.org/pcawg 
-
 - LncRNAs and cancer associations →  http://www.bio-bigdata.com/lnc2cancer/  https://www.gold-lab.org/clc
 
-## Applications
 The proposed model can be useful to **identity lncRNAs implicated in cancer** for further study and **help to detect new possible therapeutic solutions**. LncRNAs are in fact very promising therapeutic targets because their expression pattern is tissue specific **reducing the risk of off-targets and toxicity in cancer treatments**.
 This approach can be explored with other **publicly available** datasets:
 - Pan-Cancer Atlas initiative comparing 33 tumor types profiled by TCGA: https://gdc.cancer.gov/about-data/publications/pancanatlas
 - The Genotype-Tissue Expression (GTEx) project: https://www.gtexportal.org/home/
 - Cancer Cell Line Encyclopedia (CCLE): https://sites.broadinstitute.org/ccle/
 
-## Demo
+## Installation
+To install LncCancer, use
+```git clone https://github.com/D4GEN-Genopole/DL-CancerLncRNA.git```.
+We support Python 3.8 on Linux, macOS and Windows.
 
-To start the API, use the following command : 
+## Interface
+To launch the API, use the following command : 
 ```shell
 make deploy_api
 ```
@@ -40,29 +35,21 @@ And then you can enter the gene id, which is then going to return the top 3 canc
 It will then generate barcharts for either the cancer or the functions associated. 
 
 <p align="center">
-
 <a >
     <img src='images/demo.gif'  width="800"/>
 </a>
-
 </p>
 
-
-
-
-
-## Installation 
-
-To run the code and do the learning process, one should use the following command : 
-
+## Model evaluation
+To train and evaluate any of our baselines, or any custom model of your own, use :
 ```shell
-make eval MODEL=<MODEL_NAME> ARGS="ARG1 VALUE1 ARG2 VALUE2"
+make eval MODEL=<MODEL_NAME> ARGS="<ARG1> <VALUE1> <ARG2> <VALUE2>"
 ```
-with <MODEL_NAME> the name of the model to use (usually a class in the `models` directory). 
-If one wants to add arguments to the model, use it in the `ARGS` parameter.
+where <MODEL_NAME> is the name of the model class to use (a class in the `models` directory). 
+To feed parameters to the model, specify them in the `ARGS` parameter string.
 
-One can also use the container (Docker). 
-To do so, use the following command : 
+It is also possible to use the Docket container. 
+To do so, use : 
 ```shell
 make docker 
 ```
@@ -103,11 +90,11 @@ To get the plots of the visualisations, use the following command :
 make viz
 ```
 
-## Model 
+## Models
 
-We tried different models for both the expression and sequential data. 
+We tried different models for both the expressions and sequences data. 
 
-### Expression 
+### Expressions models
 
 Expression data is a type of tabular data that is obtained through RNA sequencing. It represents the different expression levels of transcripts for different patients, and is typically normalized to facilitate comparison across samples.
 
@@ -115,34 +102,23 @@ Here, we formatted the expression table so that the lncRNAs are rows for which w
 
 The goal here is to see if lncRNAs that have similar expression levels for the same samples are involved in the same cancers, and/or have the same biological functions.
 
-The models were trained using keras. 
+We implemented the following models for expressions data:
+- `ExpMLP`: Multi-layer perceptron. We experimented with different hyperparameters such as the number and size of the dense layers, or the dropout rate.
+- We also tested classical machine learning algorithms such as `ExpRF` (Random forest) and `ExpKNN` (K-nearest neighbors).
 
-- `MLP`: we varied different hyperparameters such as the number and size of the dense layers, or the dropout rate.
-- `CNN`: the expressions (for one lncRNA, across each patient sample) were encoded as vectors and passed as input to a CNN.
-- We also tested classical machine learning algorithms such as `SVM`, `Random Forest` and `KNN`, using scikit-learn.
+### Sequences models
 
-### Sequential
+For the sequences, we only have as inputs a sequence of nucleotides for each lncRNA.
 
-For the sequential part, we only have as inputs a sequence of nucleotides for each lncRNA.
+Therefore, models will first have to encode those sequences into vectors, and then use them to predict the different possible cancer types and biological functions.
 
-Therefore, we tried to convert those sequences into vectors, that give more information than just the nucleotides. 
-
-Here is a list of the preprocessing we tried : 
-
-- `One-hot-encoding` : we convert each nucleotide into a vector of size 4, with only one 1 value. 
-- `K-mer` : we count the occurrence of the k-mer in the sequence. We then used 4-mer to try to learn different models 
-- # TODO : LOIC
+We implemented the following models for seqences data:
+- `KmersMLP`: K-mers encoding, followed by a Multi-layer perceptron classifier.
+- `KmersRF` and `KmersKNN`: similarly use K-mers encoding, followed by a Random forest / K-nearest Neighbor classifier.
+- `GRUModel`: One-hot encoding, followed by a Gated recurrent unit classifier.
+- `EmbeddingCNN1D`: trained Embedding encoding, followed by a 1-D Convolutional classifier.
 
 For the models, we used either pytorch or keras to train the models. 
-
-In pytorch, we tried : 
-- `GRU` : with either one-hot-encoding or 4-mer as preprocessing. We used either 128 or 256 as hidden dimensions. 
-- `LSTM` : with either one-hot-encoding or 4-mer as preprocessing. We also used either 128 or 256 hidden dimensions.
-
-In keras, we tried : 
-- `CNN` : #TODO (Loic)
-
-
 
 ## Teams 
 
