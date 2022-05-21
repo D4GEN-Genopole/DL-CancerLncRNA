@@ -1,7 +1,8 @@
 # DL-CancerLncRNA
-AI Technologies
 
-TEAM Leader: Constance CREUX - [IBISC](https://www.ibisc.univ-evry.fr/)
+LOGO 
+
+
 
 ## Objective
 The present project consists on the development of an AI method based on deep-learning to associate long non-coding RNAs (lncRNAs) to cancer types and biological functions. 
@@ -24,11 +25,46 @@ This approach can be explored with other **publicly available** datasets:
 - The Genotype-Tissue Expression (GTEx) project: https://www.gtexportal.org/home/
 - Cancer Cell Line Encyclopedia (CCLE): https://sites.broadinstitute.org/ccle/
 
+## Installation 
 
-# CLI 
+To run the code and do the learning process, one should use the following command : 
 
-Pour run le code, il faut utiliser les commandes suivantes : 
 ```shell
 make eval MODEL=<MODEL_NAME> ARGS="ARG1 VALUE1 ARG2 VALUE2"
 ```
-avec <MODEL_NAME> le nom de la classe du modèle, et les arguments donnés dans `ARGS`. 
+with <MODEL_NAME> the name of the model to use (usually a class in the `models` directory). 
+If one wants to add arguments to the model, use it in the `ARGS` parameter.
+
+
+## Data 
+
+### Description
+
+DESCRIPTION OF THE WAY WE COLLECTED THE DATA 
+
+### Visualisation 
+
+We have collected three main datasets : one with the sequences of the RNAs, one with the expressions and the last one with both of them. 
+
+Here is a visualisation of the distribution of the labels : 
+
+| Sequences | Expressions |
+|---| --- |
+| ![](/images/sequences_cancer.png) | ![](/images/expressions_cancer.png) |
+
+
+The final dataset with both of the features of the RNA has the following proportion between the different representations : 
+
+| Sequences and Expressions |
+|---| 
+| ![](/images/intersection.png) | 
+
+
+
+
+## Teams 
+
+- TEAM Leader: Constance CREUX - [IBISC](https://www.ibisc.univ-evry.fr/)
+- Lilia ESTRADA - [Institut Curie](https://institut-curie.org/)
+- Loïc OMNES - [IBISC](https://www.ibisc.univ-evry.fr/)
+- Clément BERNARD - [Telecom Paris / Eurecom / Polytechnique Montréal]
