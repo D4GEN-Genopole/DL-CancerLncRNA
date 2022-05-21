@@ -42,7 +42,7 @@ It will then generate barcharts for either the cancer or the functions associate
 <p align="center">
 
 <a >
-    <img src='images/demo.gif'  width="400"/>
+    <img src='images/demo.gif'  width="800"/>
 </a>
 
 </p>
