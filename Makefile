@@ -12,3 +12,6 @@ load_from_vm :
 deploy_api :
 	# Make test prediction
 	streamlit run api/app.py
+
+viz :
+	python3 cli.py visualize_data
