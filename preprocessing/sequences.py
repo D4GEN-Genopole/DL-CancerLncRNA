@@ -68,30 +68,50 @@ class KmersEncoding(BasePreprocessor):
         return df_normalized
 
 
+class MersIndexEncoding(BasePreprocessor):
+    def __init__(self, k, length=500):
+        super().__init__()
+        self.k = k
+        self.length = length
+        mers = [''.join(comb) for comb in itertools.product('ATCG', repeat=self.k)]
+        self.val_dict = {mer: i+1 for i, mer in enumerate(mers)}
+        self.val_dict[np.nan] = 0
+
+    def transform(self, X):
+        seqs_trimmed = X.sequence.apply(lambda x: x[:self.length + self.k - 1])
+        n_grams = seqs_trimmed.apply(lambda x: [''.join(comb)
+                                    for comb in more_itertools.windowed(x, self.k)]
+                                    + [np.nan] * (self.length + self.k - 1 - len(x))
+                                    if len(x) >= self.k
+                                    else [np.nan] * self.length)
+        X_preproc = pd.DataFrame(n_grams.tolist(), index=X.index)
+        X_preproc = X_preproc.applymap(lambda x: self.val_dict[x])
+
+        return X_preproc
+
+
 class MersOneHotEncoding(BasePreprocessor):
     def __init__(self, k, length=500):
         super().__init__()
         self.k = k
-        self.length = length - 2
+        self.length = length
         mers = [''.join(comb) for comb in itertools.product('ATCG', repeat=self.k)]
-        self.val_dict = {mer: i+1 for i, mer in enumerate(mers)}
-        self.val_dict['start'] = 0
-        self.val_dict['end'] = max(self.val_dict.values()) + 1
+        self.val_dict = {mer: i for i, mer in enumerate(mers)}
 
     def transform(self, X):
         X.loc[:, 'sequence'] = X.sequence.apply(lambda x: x[:self.length + self.k - 1])
-        X = X.sequence.apply(lambda x: ['start'] + [''.join(comb)
+        X = X.sequence.apply(lambda x: [''.join(comb)
                                     for comb in more_itertools.windowed(x, self.k)]
-                                    + ['end'] + [np.nan] * (self.length + self.k - 1 - len(x))
+                                    + [np.nan] * (self.length + self.k - 1 - len(x))
                                     if len(x) >= self.k
-                                    else ['start', 'end'] + [np.nan] * self.length)
+                                    else [np.nan] * self.length)
         X = pd.DataFrame(X.tolist())
         X = X.applymap(lambda x: self.val_dict[x] if not pd.isna(x) else x)
         nan_mask = X.notna()
         X = pd.DataFrame(X.fillna(0), dtype='int')
         xmat = np.stack((np.arange(X.shape[0]),) * X.shape[1], axis=1)
         ymat = np.stack((np.arange(X.shape[1]),) * X.shape[0], axis=0)
-        values = np.zeros((X.shape[0], len(self.val_dict.keys()), self.length+2))
+        values = np.zeros((X.shape[0], len(self.val_dict.keys()), self.length))
         values[xmat[nan_mask], X.values[nan_mask], ymat[nan_mask]] = 1.
 
         return values
