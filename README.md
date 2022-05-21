@@ -31,7 +31,7 @@ To launch the API, use the following command :
 ```shell
 make deploy_api
 ```
-And then you can enter the gene id, which is then going to return the top 3 cancers that our model predict. 
+And then you can enter the gene id Ensembl version (e.g. ENSG00000266835), which is then going to return the top 3 cancers that our model predict. 
 It will then generate barcharts for either the cancer or the functions associated. 
 
 <p align="center">
@@ -58,10 +58,10 @@ make docker
 
 ### Description
 
-Our dataset was curated to represent well-documented, experimentally validated associations between long non-coding RNAs and various cancers and functions. 
+Our dataset was preprocessed to represent well-documented, experimentally validated associations between long non-coding RNAs and various cancers and functions.
 We obtained lncRNA / cancer associations from two sources: the recent Cancer LncRNA Census 2 (CLC2) with just over 1.2k associations, and the database Lnc2Cancer with 10k associations.
-There were some duplicates in the two databases, which we eliminated. The types of cancer were different: the information from Lnc2Cancer was very specific, which made having enough examples difficult for some classes. We decided to pre-process the different types of cancers in both databases to create a broader, consistent list of 30 cancers (e.g, 'triple-negative breast cancer' was re-classified as 'breast cancer').
-Information on the cancer hallmark the lncRNAs are involved in was also downloaded from Lnc2Cancer.
+There were some duplicates in the two databases, which were eliminated. The types of cancer were different: the information from Lnc2Cancer was very specific, which made having enough examples difficult for some classes. We decided to pre-process the different types of cancers in both databases to create a broader, consistent list of 30 cancers (e.g, 'triple-negative breast cancer' was re-classified as 'breast cancer').
+Information about the cancer hallmarks of the lncRNAs was also obtained from Lnc2Cancer.
 
 LncRNAs are a complex object of study, therefore we devised two approaches: one based on learning from lncRNA sequences, and the other from expression data. When the information was available, transcript sequences were obtained using the Ensembl bioMart tool, and expression data from the PCGAWG study.
 

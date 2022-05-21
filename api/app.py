@@ -11,10 +11,10 @@ def get_navigation_bar():
     get_app_info()
 
 def get_page_content():
-    project_title = st.markdown("<h1 style='text-align: center; color: white;'>CancerLncRNA</h1>",
+    project_title = st.markdown("<h1 style='text-align: center; color: black;'>CancerLncRNA</h1>",
                 unsafe_allow_html=True)
     get_logo()
-    hackathon_title = st.markdown("<h3 style='text-align: center; color: white;'>D4Gen Hacking Days</h3>",
+    hackathon_title = st.markdown("<h3 style='text-align: center; color: black;'>D4Gen Hacking Days</h3>",
                 unsafe_allow_html=True)
     prediction_title = st.subheader("Cancer prediction")
     prediction_description = st.caption("Given a Gencode id, we predict the percentage to have a cancer.")
@@ -41,16 +41,16 @@ def get_results(gencode_id):
     page_cols[0].subheader('Cancers : ')
     page_cols[1].subheader('Functions: ')
     for i,(cancer, score) in enumerate(cancers[:3].iteritems()):
-        page_cols[0].markdown(f"<h3 style='text-align: center; color: white;'>{i+1}. {cancer}</h3>",
+        page_cols[0].markdown(f"<h3 style='text-align: center; color: black;'>{i+1}. {cancer}</h3>",
                     unsafe_allow_html=True)
-        page_cols[0].markdown(f"<h3 style='text-align: center; color: green;'>Score : {score}</h3>",
+        page_cols[0].markdown(f"<h3 style='text-align: center; color: #2a9d8f;'>Score : {score:.2f}</h3>",
                               unsafe_allow_html=True)
     for i, (function, score) in enumerate(functions[:3].iteritems()):
         page_cols[1].markdown(
-            f"<h3 style='text-align: center; color: white;'>{i + 1}. {function}</h3>",
+            f"<h3 style='text-align: center; color: black;'>{i + 1}. {function}</h3>",
             unsafe_allow_html=True)
         page_cols[1].markdown(
-            f"<h3 style='text-align: center; color: blue;'>Score : {score}</h3>",
+            f"<h3 style='text-align: center; color: #3a86ff;'>Score : {score:.2f}</h3>",
             unsafe_allow_html=True)
     return cancers, functions
 
@@ -58,16 +58,19 @@ def get_results(gencode_id):
 def visualize_outputs(cancers, functions) :
     """Visualize the outputs."""
     st.subheader("Cancers")
-    fig = px.bar(cancers[:10], orientation='h')
+    cancers = pd.DataFrame(cancers)
+    fig = px.bar(cancers[:10], orientation='h', color_discrete_sequence = ['#2a9d8f']*len(cancers[:10]))
+    fig.update_layout(showlegend=False)
     fig.update_layout(
-        xaxis_title="Score",
+        xaxis_title="Probability of involvement",
         yaxis_title="Cancer",
     )
     st.write(fig)
     st.subheader("Functions")
-    fig = px.bar(functions, orientation='h')
+    fig = px.bar(functions, orientation='h', color_discrete_sequence = ['#3a86ff']*len(functions[:10]))
+    fig.update_layout(showlegend=False)
     fig.update_layout(
-        xaxis_title="Score",
+        xaxis_title="Probability of involvement",
         yaxis_title="Cancer",
     )
     st.write(fig)
@@ -76,7 +79,6 @@ def visualize_outputs(cancers, functions) :
 def main():
     """Main function"""
     st.set_page_config(page_title="TITLE", page_icon=":medical_symbol:", layout="wide")
-
     # Navigation bar
     get_navigation_bar()
 
