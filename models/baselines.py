@@ -59,7 +59,9 @@ class SklearnModel(BaseModel):
     def predict_proba(self, X):
         if self.preprocessor is not None:
             X = self.preprocessor.transform(X)
-        preds = self.model.predict(X)
+        preds = self.model.predict_proba(X)
+        if isinstance(preds, list):
+            preds = np.stack([p[:, 1] for p in preds], axis=1)
         return pd.DataFrame(preds, index=X.index, columns=self.target_cols)
 
 

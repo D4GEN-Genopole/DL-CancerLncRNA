@@ -4,6 +4,7 @@ from models.sequences.baselines import *
 from models.expressions.baselines import *
 from models.sequences_expressions.baselines import *
 from models.sequences.gru import GRUModel
+from models.sequences.cnn import EmbeddingCNN1D
 
 @click.group()
 def cli():
@@ -27,7 +28,7 @@ def eval(ctx, model_cls):
         key, value = ctx.args[i], ctx.args[i + 1]
         key = key.lstrip('-')
         try:
-            value = float(value)
+            value = int(value) if int(value) == float(value) else float(value)
         except ValueError:
             pass
         kwargs[key] = value
