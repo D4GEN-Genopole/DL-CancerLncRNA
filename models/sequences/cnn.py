@@ -38,7 +38,8 @@ class EmbeddingCNN1D(BaseModel):
         import pandas as pd
         df_test = pd.read_csv('data\sequences_test.csv')
         df_test.set_index('gencode_id', inplace=True)
-        X_test, y_test = df_test.iloc[:, :-35], df_test.iloc[:, -35:]
+        n_targets = len(self.target_cols)
+        X_test, y_test = df_test.iloc[:, :-n_targets], df_test.iloc[:, -n_targets:]
         X_test_preprocessed = self.preprocessor.transform(X_test)
         ####################until here
 
