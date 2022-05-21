@@ -22,8 +22,10 @@ This approach can be explored with other **publicly available** datasets:
 - Cancer Cell Line Encyclopedia (CCLE): https://sites.broadinstitute.org/ccle/
 
 ## Installation
-To install LncCancer, use
-```git clone https://github.com/D4GEN-Genopole/DL-CancerLncRNA.git```.
+To install LncCancer, use :
+```shell
+git clone https://github.com/D4GEN-Genopole/DL-CancerLncRNA.git
+```
 We support Python 3.8 on Linux, macOS and Windows.
 
 ## Interface
