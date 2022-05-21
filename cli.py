@@ -1,10 +1,13 @@
+import os
 import click
-from utils.evaluate import SequencesEvaluator, ExpressionsEvaluator, SequencesExpressionsEvaluator
 from models.sequences.baselines import *
 from models.expressions.baselines import *
 from models.sequences_expressions.baselines import *
 from models.sequences.gru import GRUModel
 from models.sequences.cnn import EmbeddingCNN1D
+from utils.evaluate import SequencesEvaluator, ExpressionsEvaluator, SequencesExpressionsEvaluator
+from utils.visualize import Visualization
+
 
 @click.group()
 def cli():
@@ -39,7 +42,17 @@ def eval(ctx, model_cls):
                     else ExpressionsEvaluator
     evaluator_cls(model).evaluate()
 
+@click.command(name='visualize_data',
+               context_settings={'ignore_unknown_options': True,
+                                 'allow_extra_args': True})
+def visualize_data():
+    viz = Visualization('data')
+    viz.plot_cancer_sequence()
+    viz.plot_cancer_expression()
+    viz.plot_intersection()
+
 
 cli.add_command(eval)
+cli.add_command(visualize_data)
 if __name__ == '__main__':
     cli()
