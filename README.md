@@ -30,6 +30,27 @@ This approach can be explored with other **publicly available** datasets:
 - The Genotype-Tissue Expression (GTEx) project: https://www.gtexportal.org/home/
 - Cancer Cell Line Encyclopedia (CCLE): https://sites.broadinstitute.org/ccle/
 
+## Demo
+
+To start the API, use the following command : 
+```shell
+make deploy_api
+```
+And then you can enter the gene id, which is then going to return the top 3 cancers that our model predict. 
+It will then generate barcharts for either the cancer or the functions associated. 
+
+<p align="center">
+
+<a >
+    <img src='images/demo.gif'  width="400"/>
+</a>
+
+</p>
+
+
+
+
+
 ## Installation 
 
 To run the code and do the learning process, one should use the following command : 
@@ -71,6 +92,8 @@ To get the plots of the visualisations, use the following command :
 ```shell
 make viz
 ```
+
+
 
 
 ## Teams 
