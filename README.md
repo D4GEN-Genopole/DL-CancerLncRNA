@@ -12,8 +12,8 @@
 ## Objective
 The present project consists on the development of an AI method based on deep-learning to associate long non-coding RNAs (lncRNAs) to cancer types and biological functions. 
 
-Long non-coding RNAs (**LncRNAs**) are transcripts >200 nt that do not code for proteins. There are ~40 000 - 60 000 lncRNAs in the human genome. However, up to now we only have information for much less than 1000. Several of them are implicated in important cell processes and maladies such as cancer.
-Experimental characterisation of lncRNAs it’s a long process. **Bioinformatics approaches are urgently needed** to identify the lncRNAs of interest for **clinical applications**.
+Long non-coding RNAs (**LncRNAs**) are transcripts >200 nt that do not code for proteins. There are ~40 000 - 60 000 lncRNAs in the human genome. However, up to now we only have information for much less than 1000. Several of them are implicated in important cell processes and diseases such as cancer.
+Experimental characterisation of lncRNAs is a long process. **Bioinformatics approaches are urgently needed** to identify the lncRNAs of interest for **clinical applications**.
 Tons of data for their study are already available, and many of them **are public**!
 In this project we collected some of the publicly available data such as:
 
@@ -66,7 +66,12 @@ If one wants to add arguments to the model, use it in the `ARGS` parameter.
 
 ### Description
 
-DESCRIPTION OF THE WAY WE COLLECTED THE DATA 
+Our dataset was curated to represent well-documented, experimentally validated associations between long non-coding RNAs and various cancers and functions. 
+We obtained lncRNA / cancer associations from two sources: the recent Cancer LncRNA Census 2 (CLC2) with just over 1.2k associations, and the database Lnc2Cancer with 10k associations.
+There were some duplicates in the two databases, which we eliminated. The types of cancer were different: the information from Lnc2Cancer was very specific, which made having enough examples difficult for some classes. We decided to pre-process the different types of cancers in both databases to create a broader, consistent list of 30 cancers (e.g, 'triple-negative breast cancer' wasre-classified as 'breast cancer').
+Information on the cancer hallmark the lncRNAs are involved in was also downloaded from Lnc2Cancer.
+
+LncRNAs are a complex object of study, therefore we devised two approaches: one based on learning from lncRNA sequences, and the other from expression data. When the information was available, transcript sequences were obtained using the Ensembl bioMart tool, and expression data is from the PCAWG study.
 
 ### Visualisation 
 
@@ -95,22 +100,33 @@ make viz
 
 ## Model 
 
-We tried different models for both the functional and sequential data. 
+We tried different models for both the expression and sequential data. 
 
-### Functional 
+### Expression 
 
 # TODO (CONSTANCE, LILIA)
+Expression data is a type of tabular data that is obtained through RNA sequencing. It represents the different expression levels of transcripts for different patients, and is typically normalized to facilitate comparison across samples.
+
+Here, we formatted the expression table so that the lncRNAs are rows for which we want to learn / predict cancer types, and patient samples are the attributes used to describe them. 
+
+The goal here is to see if lncRNAs that have similar expression levels for the same samples are involved in the same cancers, and/or have the same biological functions.
+
+The models were trained using keras. 
+
+- `MLP`
+- `CNN`: the expressions were encoded as vectors and passed as input to a CNN.
+- We also tested classical machine learning algorithms such as `SVM`, `Random Forest` and `KNN`, using scikit-learn.
 
 ### Sequential
 
 For the sequential part, we only have as inputs a sequence of nucleotide for each RNA.
 
-Therefore, we tried to convert those sequences into vectors, that give more information than just the nucleotids. 
+Therefore, we tried to convert those sequences into vectors, that give more information than just the nucleotides. 
 
 Here is a list of the preprocessing we tried : 
 
-- `One-hot-encoding` : we convert each nucleotid into a vector of size 4, with only one 1 value. 
-- `K-mer` : we count the occurence of the k-mer in the sequence. We then used 4-mer to try to learn different model 
+- `One-hot-encoding` : we convert each nucleotide into a vector of size 4, with only one 1 value. 
+- `K-mer` : we count the occurence of the k-mer in the sequence. We then used 4-mer to try to learn different models 
 - # TODO : LOIC
 
 For the models, we used either pytorch or keras to train the models. 
