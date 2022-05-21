@@ -19,6 +19,10 @@ In this project we collected some of the publicly available data such as:
 
 ## Applications
 The proposed model can be useful to **identity lncRNAs implicated in cancer** for further study and **help to detect new possible therapeutic solutions**. LncRNAs are in fact very promising therapeutic targets because their expression pattern is tissue specific **reducing the risk of off-targets and toxicity in cancer treatments**.
+This approach can be explored with other **publicly available** datasets:
+- Pan-Cancer Atlas initiative comparing 33 tumor types profiled by TCGA: https://gdc.cancer.gov/about-data/publications/pancanatlas
+- The Genotype-Tissue Expression (GTEx) project: https://www.gtexportal.org/home/
+- Cancer Cell Line Encyclopedia (CCLE): https://sites.broadinstitute.org/ccle/
 
 
 # CLI 
