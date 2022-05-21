@@ -93,6 +93,34 @@ To get the plots of the visualisations, use the following command :
 make viz
 ```
 
+## Model 
+
+We tried different models for both the functional and sequential data. 
+
+### Functional 
+
+# TODO (CONSTANCE, LILIA)
+
+### Sequential
+
+For the sequential part, we only have as inputs a sequence of nucleotide for each RNA.
+
+Therefore, we tried to convert those sequences into vectors, that give more information than just the nucleotids. 
+
+Here is a list of the preprocessing we tried : 
+
+- `One-hot-encoding` : we convert each nucleotid into a vector of size 4, with only one 1 value. 
+- `K-mer` : we count the occurence of the k-mer in the sequence. We then used 4-mer to try to learn different model 
+- # TODO : LOIC
+
+For the models, we used either pytorch or keras to train the models. 
+
+In pytorch, we tried : 
+- `GRU` : with either one-hot-encoding or 4-mer as preprocessing. We used either 128 or 256 as hidden dimensions. 
+- `LSTM` : with either one-hot-encoding or 4-mer as preprocessing. We also used either 128 or 256 hidden dimensions.
+
+In keras, we tried : 
+- `CNN` : #TODO (Loic)
 
 
 
