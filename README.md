@@ -1,7 +1,12 @@
 # DL-CancerLncRNA
 
-LOGO 
+<p align="center">
 
+<a >
+    <img src='images/logo.png'  width="400"/>
+</a>
+
+</p>
 
 
 ## Objective
@@ -59,7 +64,11 @@ The final dataset with both of the features of the RNA has the following proport
 |---| 
 | ![](/images/intersection.png) | 
 
+To get the plots of the visualisations, use the following command : 
 
+```shell
+make viz
+```
 
 
 ## Teams 
