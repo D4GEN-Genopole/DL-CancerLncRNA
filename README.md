@@ -55,7 +55,7 @@ Here is a visualisation of the distribution of the labels :
 
 | Sequences | Expressions |
 |---| --- |
-| ![](/images/sequences_cancer.png) | ![](/images/expressions_cancer_bis.png) |
+| ![](/images/sequences_cancer.png) | ![](/images/expression_cancer_bis.png) |
 
 
 The final dataset with both of the features of the RNA has the following proportion between the different representations : 
